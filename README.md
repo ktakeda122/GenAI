@@ -26,19 +26,21 @@ simulate(sequence)   # sequence: "1B 1B HR" or ["1B", "1B", "HR"]
 ```
 4_1/
 ├─ README.md               # this file
-├─ test_acceptance.py      # shared 21-case acceptance suite (run in each folder)
 ├─ pyproject.toml          # uv project (dev deps: pytest, radon)
 ├─ byhand/
-│  └─ half_inning.py       # single-file, hand-written design
+│  ├─ half_inning.py       # single-file, hand-written design
+│  └─ test_acceptance.py   # shared 21-case suite (run here)
 ├─ vibecode/
-│  └─ baseball/            # 8-module package the agent produced
-│     ├─ bases.py  count.py  errors.py  events.py
-│     ├─ inning.py  outcomes.py  rules.py  __init__.py
-│     └─ tests/...
+│  ├─ baseball/            # 8-module package the agent produced
+│  │  ├─ bases.py  count.py  errors.py  events.py
+│  │  └─ inning.py  outcomes.py  rules.py  __init__.py
+│  ├─ tests/              # the vibecode version's own tests
+│  └─ test_acceptance.py   # shared 21-case suite (run here)
 └─ together/
    ├─ half_inning.py       # single-file, grown feature-by-feature with the agent
    ├─ CLAUDE.md            # design guide given to the agent
-   └─ test_half_inning.py  # the together version's own test suite
+   ├─ test_half_inning.py  # the together version's own test suite
+   └─ test_acceptance.py   # shared 21-case suite (run here)
 ```
 
 ## The three versions
