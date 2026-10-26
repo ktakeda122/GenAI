@@ -24,6 +24,7 @@ class Event(StrEnum):
     STRIKEOUT = "K"
     GROUNDOUT = "GO"
     FLYOUT = "FO"
+    STOLEN_BASE = "SB"
 
     @classmethod
     def parse(cls, code: str | Event) -> Event:
@@ -34,10 +35,16 @@ class Event(StrEnum):
             raise InvalidEventError(f"unknown event code {code!r}; expected one of: {valid}") from None
 
 
-type Action = Pitch | Outcome
+class Steal:
+    """A baserunning action that happens mid plate appearance."""
 
-# Every event is either a pitch (which updates the count) or a terminal
-# outcome (which ends the plate appearance directly).
+
+STEAL = Steal()
+
+type Action = Pitch | Outcome | Steal
+
+# Every event is a pitch (which updates the count), a terminal outcome (which
+# ends the plate appearance directly), or a steal (which only moves runners).
 EVENT_ACTIONS: Mapping[Event, Action] = MappingProxyType(
     {
         Event.BALL: Pitch.BALL,
@@ -51,6 +58,7 @@ EVENT_ACTIONS: Mapping[Event, Action] = MappingProxyType(
         Event.STRIKEOUT: outcomes.STRIKEOUT,
         Event.GROUNDOUT: outcomes.BatterOut(),
         Event.FLYOUT: outcomes.BatterOut(),
+        Event.STOLEN_BASE: STEAL,
     }
 )
 

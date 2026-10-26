@@ -61,6 +61,11 @@ class Bases:
         self._occupied = [False, False, False]
         return sum(self._place_runner(start + bases) for start in starts)
 
+    def steal_second(self) -> None:
+        """Move the runner on first to second, if first is taken and second is empty."""
+        if self._occupied[0] and not self._occupied[1]:
+            self._occupied[0], self._occupied[1] = False, True
+
     def _runner_starts(self) -> list[int]:
         """Start positions to advance: each current runner, plus the batter at home (-1)."""
         return [i for i, taken in enumerate(self._occupied) if taken] + [-1]
@@ -116,6 +121,11 @@ class HalfInning:
     def foul(self) -> None:
         if self.strikes < self.STRIKES_FOR_OUT - 1:
             self.strike()
+
+    # -- baserunning transitions (the plate appearance continues) ------------
+
+    def steal(self) -> None:
+        self.bases.steal_second()
 
     # -- outcome transitions (the plate appearance ends) ---------------------
 
@@ -251,6 +261,12 @@ class Foul(Event):
         inning.foul()
 
 
+@event("SB")
+class StolenBase(Event):
+    def apply(self, inning: HalfInning) -> None:
+        inning.steal()
+
+
 def parse_event(token: str) -> Event:
     try:
         return EVENT_TYPES[token]()
@@ -327,6 +343,22 @@ def _self_test() -> None:
     # three groundouts end the inning
     i = simulate("GO GO GO")
     assert (i.outs, i.over) == (3, True)
+
+    # a steal moves the runner from first to second
+    i = simulate("1B SB")
+    assert (i.runs, i.outs, i.bases_occupied()) == (0, 0, (False, True, False))
+
+    # a steal with nobody on first does nothing
+    i = simulate("SB")
+    assert i.bases_occupied() == (False, False, False)
+
+    # a steal is blocked when second is occupied
+    i = simulate("1B 1B SB")
+    assert i.bases_occupied() == (True, True, False)
+
+    # a steal leaves the count alone: three more strikes is one strikeout
+    i = simulate("1B SB S S S")
+    assert (i.outs, i.bases_occupied()) == (1, (False, True, False))
 
     print("seed self-tests passed")
 

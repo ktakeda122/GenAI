@@ -4,15 +4,13 @@ Covers the six shared acceptance cases from CLAUDE.md plus edge cases: the count
 (fouls and resets), walk forcing from every base state, hits advancing runners,
 outs leaving runners put, error handling, and input formats.
 
-The module file is Half_inning.py. Although the backlog spec wrote the import as
-``from half_inning import ...``, CPython performs a case-sensitivity check on
-import even on case-insensitive filesystems, so the module must be imported with
-its real filename case.
+The module file is half_inning.py. CPython checks filename case on import even
+on case-insensitive filesystems, so the import must match that case exactly.
 """
 
 import pytest
 
-from Half_inning import simulate, InningOver, HalfInning, parse_event
+from half_inning import simulate, InningOver, HalfInning, parse_event
 
 
 def snapshot(inning: HalfInning):
@@ -153,3 +151,33 @@ def test_string_and_list_inputs_are_equivalent():
 def test_empty_input_is_a_fresh_scoreless_inning(empty):
     inning = simulate(empty)
     assert snapshot(inning) == (0, 0, False, (False, False, False))
+
+
+# -- 8. Stolen base ----------------------------------------------------------
+
+@pytest.mark.parametrize(
+    "sequence, bases",
+    [
+        ("1B SB",       (False, True, False)),   # first -> second
+        ("SB",          (False, False, False)),  # nobody on first: nothing
+        ("1B 1B SB",    (True, True, False)),    # second occupied: blocked
+        ("1B 1B 1B SB", (True, True, True)),     # loaded: blocked
+    ],
+)
+def test_stolen_base_movement(sequence, bases):
+    inning = simulate(sequence)
+    assert inning.runs == 0
+    assert inning.outs == 0
+    assert inning.bases_occupied() == bases
+
+
+def test_steal_does_not_change_the_count():
+    inning = simulate("B S SB")
+    assert (inning.balls, inning.strikes) == (1, 1)
+
+
+def test_steal_does_not_end_the_plate_appearance():
+    # the steal doesn't reset or advance the count: three strikes still strike out
+    inning = simulate("1B SB S S S")
+    assert inning.outs == 1
+    assert inning.bases_occupied() == (False, True, False)

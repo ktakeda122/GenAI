@@ -42,6 +42,13 @@ class Bases:
                 new_occupied[destination - 1] = True
         return Bases(tuple(new_occupied)), runs
 
+    def steal_second(self) -> Bases:
+        """Move the runner on first to second; a no-op unless first is taken and second is empty."""
+        first, second, third = self.occupied
+        if first and not second:
+            return Bases((False, True, third))
+        return self
+
     def force_batter_to_first(self) -> tuple[Bases, int]:
         """Award the batter first base, forcing runners ahead only as needed.
 

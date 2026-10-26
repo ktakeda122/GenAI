@@ -66,6 +66,12 @@ class Bases:
         self._occupied[0] = True
         return runs
 
+    def steal_second(self) -> None:
+        """A runner on first steals second, if second is open."""
+        if self._occupied[0] and not self._occupied[1]:
+            self._occupied[0] = False
+            self._occupied[1] = True
+
     @staticmethod
     def _place(bases: list[bool], destination: int) -> int:
         """Put a runner on destination, or score them if past third."""
@@ -135,6 +141,11 @@ class HalfInning:
 
     def strikeout(self) -> None:
         self.out("strikeout")
+
+    def steal(self) -> None:
+        # a baserunning play: no out, no run, count and plate appearance unchanged
+        self.bases.steal_second()
+        self.log.append(self._describe("stolen base"))
 
     # -- helpers -------------------------------------------------------------
 
@@ -257,6 +268,11 @@ class Flyout(Event):
     def apply(self, inning: HalfInning) -> None:
         inning.out("flyout")
 
+
+@event("SB")
+class StolenBase(Event):
+    def apply(self, inning: HalfInning) -> None:
+        inning.steal()
 
 def parse_event(token: str) -> Event:
     try:

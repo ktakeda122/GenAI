@@ -7,7 +7,7 @@ from collections.abc import Iterable, Mapping
 from baseball.bases import Bases
 from baseball.count import Count, Pitch
 from baseball.errors import InningOverError
-from baseball.events import EVENT_ACTIONS, Action, Event
+from baseball.events import EVENT_ACTIONS, Action, Event, Steal
 from baseball.outcomes import Outcome
 from baseball.rules import DEFAULT_RULES, Rules
 
@@ -57,6 +57,8 @@ class HalfInning:
                 self._count = self._count.after(pitch, self._rules)
                 if (forced := self._count.outcome(self._rules)) is not None:
                     self._end_plate_appearance(forced)
+            case Steal():
+                self._bases = self._bases.steal_second()
             case outcome:
                 self._end_plate_appearance(outcome)
 
