@@ -1,0 +1,27 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Virtual environments (uv creates .venv at 4_1 and inside vibecode) ---
+.venv/
+venv/
+env/
+
+# --- Test / tooling caches ---
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.cache/
+
+# --- Build & packaging artifacts (vibecode builds the baseball-sim package) ---
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# --- OS / editor noise ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
