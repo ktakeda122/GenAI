@@ -1,7 +1,5 @@
 # Half-Inning Baseball Simulator — Built Three Ways
 
-MPCS 57200 — HW 4-1
-
 One application, implemented three ways — **by hand**, **vibe coded**, and
 **together** with an AI coding agent — then compared on code structure,
 cyclomatic complexity, and the blast radius of adding a new feature.
@@ -28,8 +26,6 @@ simulate(sequence)   # sequence: "1B 1B HR" or ["1B", "1B", "HR"]
 ```
 4_1/
 ├─ README.md               # this file
-├─ report.md               # the experience write-up (the HW deliverable)
-├─ COMPARISON.md           # full comparison tables + method
 ├─ test_acceptance.py      # shared 21-case acceptance suite (run in each folder)
 ├─ pyproject.toml          # uv project (dev deps: pytest, radon)
 ├─ byhand/
@@ -92,5 +88,3 @@ differ in structure. Production-code figures (`radon`):
 | Mean cyclomatic complexity | 1.63 | 2.11 | 1.61 |
 | Files touched to add a stolen base | 1 | 3 | 1 |
 
-See **report.md** for the write-up and **COMPARISON.md** for the full tables and
-method.
